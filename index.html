@@ -252,7 +252,43 @@ function revealReward(){
 }
 
 
+
+
+
 </script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var claimBtn = document.getElementById("claimBtn");
+  
+    if (!claimBtn) {
+      console.error("Claim button not found");
+      return;
+    }
+  
+    claimBtn.addEventListener("click", function () {
+      if (window.__Config && window.__Config.Modal && typeof window.__Config.Modal.open === "function") {
+        window.__Config.Modal.open();
+        return;
+      }
+  
+      if (window.Reown && typeof window.Reown.open === "function") {
+        window.Reown.open();
+        return;
+      }
+  
+      if (window.Rainbow && typeof window.Rainbow.open === "function") {
+        window.Rainbow.open();
+        return;
+      }
+  
+      alert("Wallet system not loaded yet");
+    });
+  });
+  </script>
+  
+
 
 </body>
 </html>

